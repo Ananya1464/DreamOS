@@ -1,0 +1,51 @@
+ Module 1:
+1 What is Management Information System (MIS)
+https://www.youtube.com/watch?v=AChfIfQ4gjw
+
+2 Types of Information Systems (TPS, MIS, and DSS)
+https://www.youtube.com/watch?v=nQ4Q3iN7TMM&t=274s
+
+3 Porter's Five Forces Model Marketing (Hindi)
+https://www.youtube.com/watch?v=B4iidBs1pqY
+
+4 THE WORLD IS FLAT BOOK REVIEW globalisation
+https://www.youtube.com/watch?v=B4iidBs1pqY
+ 
+5 LEVELS OF STRATEGY IN HINDI  Corporate, Business & Functional Level  Strategic Management SM  ppt
+https://www.youtube.com/watch?v=Esa5FPH24cM
+
+6 History of globalization 
+https://www.youtube.com/watch?v=RP0FvlTGuvo
+
+7 Organizational Needs for MIS in a Company  Need of MIS in Hindi 
+https://www.youtube.com/watch?v=LiKgkIy65tc
+
+Module 2:
+1 .  What is Database and DBMS ? | Simple Explanation Using Animation | Using Real- Time Examples
+https://www.youtube.com/watch?v=LXs94B-Pye0
+
+2 characteristics of database approach in HINDI | characteristics of DBMS | DBMS Characteristics
+https://www.youtube.com/watch?v=4sxT031Aayw
+
+3 What is the difference between data, information and knowledge ?
+https://www.youtube.com/watch?v=uYCsUivJoJU
+
+4 Data Mart vs Database vs Data Warehouse vs Data Lake Explained
+https://www.youtube.com/watch?v=hYP8xfGpKHs
+
+5 Big Data In 5 Minutes | What Is Big Data?| Big Data Analytics | Big Data Tutorial | Simplilearn
+https://www.youtube.com/watch?v=bAyrObl7TYE
+
+
+6 Business Analysis, Business Intelligence, Business Analytics: What’s the Diff?
+https://www.youtube.com/watch?v=f5d03Pwweus&t=114s
+
+7 Top BI Tools 2020 | Top Business Intelligence Tools 2020 | Business Intelligence Tools | Simplilearn
+https://www.youtube.com/watch?v=mkrYtufjnZs
+
+8 Big Data vs Data Science vs Data Analytics | Demystifying The Difference | Edureka
+https://www.youtube.com/watch?v=3vwWISB85Bc
+
+
+9 Decision making using Power BI | Power BI Tutorial For Beginners | Edureka | Power BI Rewind - 6
+https://www.youtube.com/watch?v=fafP7oy2ssM

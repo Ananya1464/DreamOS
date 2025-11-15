@@ -1,0 +1,29 @@
+Iot 1.1 & 1.2 - book arshdeep bahga - 1.1 , 1.2 1.3 1.4
+Mod 2 book Rajkamal Ch 7
+Mod 3- 3.1  Rajkamal ch5 
+3.2 ch 6 rajkamal
+Mod 4 rajkamal ch 3
+Mod 5 - 5.1 arshdeep bahga ch5 
+Ch 1 - 1.5v
+Mod 6 - rajkamal 6.1 - 10.4 
+6.2 - 10.5
+functional blocks & communication models
+1.2 IOT communication API 
+REST - Representational state Transfer follow request responce model
+Iot Enabling Technologies - wireless sensor nw , cloud computing , big Data analytics , web services, mobile internet & search engines
+https://youtu.be/cKYgZcTjzk0?si=e98uu3NhxPtClSYv
+https://youtu.be/Fj02iTrWUx0?si=ZcXCg2z8nxnu9RkF
+https://youtu.be/yMdTgsqWGAA?si=D6SoAujBXVxEPh5q
+Mod 2 - components - things in iot
+Examples of sensors - ch7 rajkamal - pg 243 - 250
+https://youtu.be/8VOuA2LFRYA?si=mjQTcTR3v0jpNx2o
+https://youtu.be/TtQE3lol6fU?si=8XMaSYVw1oXcYLOj
+https://youtu.be/01tGXC-hT1Y?si=uA4QqKXYIeo97YE8
+use of RFID in iot
+https://youtu.be/PrnNKZJj-Oc?si=yCoI82yXwV15C3yX
+Applica of WSN in iot
+https://youtu.be/sQ6NB3xBVHI?si=ezGfb54R9IR1PKeu
+https://youtu.be/Gaz7BnMEWdc?si=W2mDMr0Jc7HptRr5
+Compare R - pi with PD Duino & Beagle board
+ 👆🏼Iot protocols as per distance less than 300 ft , greater than 5km ..greater than 100km
+Mod 2 end

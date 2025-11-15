@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brutal Learning OS - Content Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 400px;
+      min-height: 500px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #FFF5F7 0%, #E8F5E9 100%);
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #FFB5C0;
+    }
+    
+    .header h1 {
+      font-size: 20px;
+      color: #2D3436;
+      margin-bottom: 4px;
+    }
+    
+    .header p {
+      font-size: 12px;
+      color: #7A8A7D;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-left: 4px solid;
+    }
+    
+    .stat-card.instagram {
+      border-color: #E1306C;
+    }
+    
+    .stat-card.youtube {
+      border-color: #FF0000;
+    }
+    
+    .stat-card h3 {
+      font-size: 12px;
+      color: #7A8A7D;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    
+    .instagram .stat-number {
+      color: #E1306C;
+    }
+    
+    .youtube .stat-number {
+      color: #FF0000;
+    }
+    
+    .stat-detail {
+      font-size: 11px;
+      color: #7A8A7D;
+    }
+    
+    .shame-zone {
+      background: linear-gradient(135deg, #FFE5E8 0%, #FFF0F0 100%);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 2px dashed #FFB5C0;
+    }
+    
+    .shame-zone h2 {
+      font-size: 16px;
+      color: #FF6B6B;
+      margin-bottom: 12px;
+    }
+    
+    .shame-stat {
+      font-size: 48px;
+      font-weight: bold;
+      color: #FF6B6B;
+      margin: 16px 0;
+    }
+    
+    .shame-message {
+      font-size: 14px;
+      color: #7A8A7D;
+      line-height: 1.5;
+    }
+    
+    .progress-bar {
+      background: #E0E0E0;
+      border-radius: 8px;
+      height: 8px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #80D6D6, #4CAF50);
+      transition: width 0.3s ease;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #80D6D6, #4CAF50);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(128, 214, 214, 0.3);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #7A8A7D;
+      border: 1px solid #E0E0E0;
+    }
+    
+    .btn-secondary:hover {
+      background: #F5F5F5;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #7A8A7D;
+    }
+    
+    .sync-status {
+      text-align: center;
+      font-size: 11px;
+      color: #7A8A7D;
+      margin-top: 16px;
+    }
+    
+    .emoji {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📊 Content Tracker</h1>
+    <p>The brutal truth about your saved content</p>
+  </div>
+  
+  <div id="app">
+    <div class="loading">
+      Loading stats...
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

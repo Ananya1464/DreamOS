@@ -1,6 +1,130 @@
+/* Import Google Fonts for personality */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Caveat:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Import circular progressbar styles */
+@import 'react-circular-progressbar/dist/styles.css';
+
+/* ═══════════════════════════════════════════════════════════════
+   🌸 DREAMOS - SOLID OPAQUE PASTEL DESIGN SYSTEM
+   
+   CRITICAL: NO TRANSPARENCY IN BACKGROUNDS!
+   ❌ DON'T USE: rgba(255, 255, 255, 0.6) ← Too washed out!
+   ✅ DO USE: #EEF1DE ← Solid, opaque, visible!
+   
+   WHY? ADHD brains need HIGH VISUAL CONTRAST:
+   - Translucent colors = visual confusion  
+   - Solid colors = instant recognition & scannability
+   - Color-coded systems ONLY work if colors are DISTINCT
+   
+   Inspired by "Morning Mint" calendar aesthetic where every
+   time block is solid, visible, and clearly differentiated.
+   ═══════════════════════════════════════════════════════════════ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════
+   🎨 DREAMOS COLOR PALETTE - SOLID OPAQUE PASTELS
+   Inspired by "Morning Mint" aesthetic - NO transparency!
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* ═══════════════════════════════════════════════════════
+     BACKGROUNDS - Solid, no transparency
+     ═══════════════════════════════════════════════════════ */
+  --cream-dream: #FFFEF7;        /* Main page background (warmer cream) */
+  --soft-cream: #EEF1DE;         /* Card backgrounds (from schedule image) */
+  --cloud-white: #FEFEFE;        /* Modal overlays */
+  --morning-mint: #E9F5EC;       /* Keep for compatibility */
+  --seafoam: #D9E4E0;
+  
+  /* ═══════════════════════════════════════════════════════
+     TIME BLOCK COLORS - BOLDER & MORE SATURATED!
+     These are SOLID, OPAQUE, with MORE contrast!
+     ═══════════════════════════════════════════════════════ */
+  --block-cream: #FFE5C8;        /* Study blocks - MORE saturated cream */
+  --block-mint: #B8E6D5;         /* Focus blocks - BOLDER mint green */
+  --block-seafoam: #9DD4C4;      /* Secondary activities - DEEPER seafoam */
+  --block-butter: #FFF4B8;       /* Highlights/success - BRIGHTER butter yellow */
+  --block-lemon: #FFF59D;        /* Energy activities - VIVID pale yellow */
+  --block-sage: #A8C99B;         /* Completed/calm - RICHER sage green */
+  --block-rose: #FFB4A4;         /* Warmth/breaks - VIVID dusty rose */
+  --block-lavender: #D4C5F9;     /* Personal time - RICHER lavender */
+  --block-peach: #FFCCBC;        /* Meals - VIBRANT peach */
+  --block-sky: #B8DDF0;          /* Planning - BRIGHTER sky blue */
+  
+  /* Warm pastels - SOLID */
+  --butter-soft: #FFF8DC;
+  --pale-sunshine: #FFFACD;
+  --dusty-rose: #E8D5C4;
+  --blush-pink: #FFE5E8;
+  --peach-whisper: #FFE5D9;
+  
+  /* Cool pastels - SOLID */
+  --sky-blue: #C5E3F6;
+  --lavender-mist: #E6E3F5;
+  --sage-whisper: #C3C7A6;
+  --mint-fresh: #D5F4E6;
+  
+  /* ═══════════════════════════════════════════════════════
+     ACCENT COLORS - MUCH MORE SATURATED & BOLD!
+     ═══════════════════════════════════════════════════════ */
+  --lavender-solid: #B5A3E5;     /* Purple accents - MUCH MORE saturated */
+  --mint-solid: #7DD3C0;         /* Mint accents - MUCH MORE saturated */
+  --peach-solid: #FFAA8F;        /* Peach accents - MUCH MORE saturated */
+  --sky-solid: #90C8E8;          /* Sky blue - MUCH MORE saturated */
+  --pink-solid: #FFB4D1;         /* Pink accents - MUCH MORE saturated */
+  
+  /* Vibrant accents - SOLID */
+  --coral-soft: #FF9B9B;
+  --sunset-pink: #FFB5C0;
+  --violet-dream: #C5A3FF;
+  --teal-calm: #80D6D6;
+  
+  /* ═══════════════════════════════════════════════════════
+     STATUS COLORS - Bold & Clear (ADHD-friendly visibility)
+     ═══════════════════════════════════════════════════════ */
+  --success-green: #9BC89B;      /* Solid pastel green (not faded) */
+  --warning-yellow: #F5E6A8;     /* Solid pastel yellow (visible) */
+  --urgent-red: #F5B5B5;         /* Solid pastel red (not harsh) */
+  --info-blue: #A8D8EA;          /* Solid pastel blue (clear) */
+  
+  /* ═══════════════════════════════════════════════════════
+     TEXT COLORS - Strong contrast for readability
+     ═══════════════════════════════════════════════════════ */
+  --text-primary: #4A4A4A;       /* Main text - dark enough to read */
+  --text-secondary: #7A7A7A;     /* Secondary text */
+  --text-muted: #9A9A9A;         /* Muted text */
+  --text-accent: #8B7AA3;        /* Purple accent text */
+  --charcoal-soft: #4A4A4A;      /* Keep for compatibility */
+  --sage-text: #7A8A7D;
+  --muted-purple: #9B8AA3;
+  
+  /* ═══════════════════════════════════════════════════════
+     BORDERS & DIVIDERS - Subtle but visible
+     ═══════════════════════════════════════════════════════ */
+  --border-light: #E5E5E5;       /* Light borders */
+  --border-medium: #D0D0D0;      /* Medium borders */
+  --border-accent: #C5B9E5;      /* Accent borders */
+  
+  /* Shadows - Only shadows can use rgba for depth */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.15);
+  --shadow-hover: 0 4px 12px rgba(197, 185, 229, 0.3);
+  
+  /* Border radius */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 * {
   margin: 0;
@@ -9,9 +133,498 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--cream-dream);
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAPHY WITH PERSONALITY 🌸
+   ═══════════════════════════════════════════════════════════════ */
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+}
+
+.handwriting {
+  font-family: 'Caveat', cursive;
+  font-size: 1.2em;
+  line-height: 1.4;
+}
+
+.display-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM SCROLLBAR (PASTEL) 🎨
+   ═══════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--soft-cream);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--lavender-solid);  /* SOLID lavender, not gradient */
+  border-radius: 10px;
+  border: 2px solid var(--soft-cream);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--pink-solid);  /* SOLID pink on hover */
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY CLASSES 🌸 - WITH MORE PERSONALITY!
+   ═══════════════════════════════════════════════════════════════ */
+.card {
+  background: var(--cloud-white);  /* SOLID white */
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  border: 1px solid var(--border-light);  /* Visible border */
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--lavender-solid), var(--pink-solid), var(--sky-solid));
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--border-accent);  /* Lavender border on hover */
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.btn-primary {
+  background: var(--lavender-solid);  /* BOLDER lavender */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '✨';
+  position: absolute;
+  top: 50%;
+  left: -30px;
+  transform: translateY(-50%);
+  font-size: 1.2em;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-hover);  /* Lavender glow */
+  background: var(--pink-solid);
+}
+
+.btn-primary:hover::before {
+  left: 10px;
+  opacity: 1;
+}
+
+.btn-primary:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.btn-secondary {
+  background: var(--soft-cream);  /* SOLID cream */
+  color: var(--text-accent);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium);  /* Visible border */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.btn-secondary:hover {
+  background: var(--block-mint);  /* SOLID mint on hover */
+  border-color: var(--border-accent);
+  color: var(--lavender-solid);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.badge-critical {
+  background: var(--urgent-red);  /* SOLID pastel red */
+  color: #8B0000;  /* Dark red text */
+  border: 1px solid #F5A5A5;
+}
+
+.badge-high {
+  background: var(--warning-yellow);  /* SOLID pastel yellow */
+  color: #8B6914;  /* Dark gold text */
+  border: 1px solid #EDD890;
+}
+
+.badge-medium {
+  background: var(--info-blue);  /* SOLID pastel blue */
+  color: #2C5F7C;  /* Dark blue text */
+  border: 1px solid #90C9DC;
+}
+
+.badge-low {
+  background: var(--block-seafoam);  /* SOLID seafoam */
+  color: var(--sage-text);
+  border: 1px solid #C0D5D0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS - ADD DELIGHT EVERYWHERE! 🦋✨
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+@keyframes confetti {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(181, 163, 229, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(181, 163, 229, 0); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.3) translateY(-50px); opacity: 0; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.sparkle-effect {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+.gentle-pulse {
+  animation: gentle-pulse 2s infinite;
+}
+
+.bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--soft-cream) 0%,
+    var(--lavender-solid) 20%,  /* SOLID lavender */
+    var(--soft-cream) 40%,
+    var(--soft-cream) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLOATING SPARKLES - ADD SOUL & DELIGHT 🌸✨
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes float-sparkle {
+  0% { 
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% { 
+    transform: translateY(-100vh) translateX(20px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.floating-sparkles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.floating-sparkles span {
+  position: absolute;
+  font-size: 20px;
+  animation: float-sparkle linear infinite;
+  opacity: 0;
+}
+
+/* Individual sparkle timing offsets */
+.floating-sparkles span:nth-child(1) { left: 10%; animation-duration: 8s; animation-delay: 0s; }
+.floating-sparkles span:nth-child(2) { left: 20%; animation-duration: 10s; animation-delay: 2s; }
+.floating-sparkles span:nth-child(3) { left: 30%; animation-duration: 12s; animation-delay: 4s; }
+.floating-sparkles span:nth-child(4) { left: 40%; animation-duration: 9s; animation-delay: 1s; }
+.floating-sparkles span:nth-child(5) { left: 50%; animation-duration: 11s; animation-delay: 3s; }
+.floating-sparkles span:nth-child(6) { left: 60%; animation-duration: 13s; animation-delay: 5s; }
+.floating-sparkles span:nth-child(7) { left: 70%; animation-duration: 10s; animation-delay: 6s; }
+.floating-sparkles span:nth-child(8) { left: 80%; animation-duration: 14s; animation-delay: 2s; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS BARS 📊 - SOLID FILLS
+   ═══════════════════════════════════════════════════════════════ */
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--border-light);  /* SOLID light gray background */
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border-medium);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width var(--transition-slow);
+  background: var(--lavender-solid);  /* SOLID lavender fill */
+  position: relative;
+}
+
+.progress-bar-fill.success {
+  background: var(--success-green);  /* SOLID green */
+}
+
+.progress-bar-fill.warning {
+  background: var(--warning-yellow);  /* SOLID yellow */
+}
+
+.progress-bar-fill.urgent {
+  background: var(--urgent-red);  /* SOLID red */
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHECKBOX STYLING 💖 - SOLID COLORS
+   ═══════════════════════════════════════════════════════════════ */
+input[type="checkbox"] {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-medium);  /* SOLID border */
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-base);
+  background: var(--cloud-white);  /* SOLID white */
+}
+
+input[type="checkbox"]:hover {
+  border-color: var(--border-accent);  /* SOLID lavender */
+}
+
+input[type="checkbox"]:checked {
+  background: var(--lavender-solid);  /* SOLID lavender, not gradient */
+  border-color: var(--lavender-solid);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL OVERLAY 🌙 - SOLID CONTENT
+   ═══════════════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(74, 74, 74, 0.6);  /* Only overlay can be translucent */
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn var(--transition-fast);
+}
+
+.modal-content {
+  background: var(--cloud-white);  /* SOLID white, not translucent */
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-light);
+  animation: slideUp var(--transition-base);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INPUT FIELDS 📝
+   ═══════════════════════════════════════════════════════════════ */
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-medium);  /* SOLID border */
+  border-radius: var(--radius-md);
+  background: var(--cloud-white);  /* SOLID white */
+  font-size: 1rem;
+  transition: all var(--transition-base);
+  background: white;
+  color: var(--text-primary);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--border-accent);  /* SOLID lavender border */
+  box-shadow: 0 0 0 4px rgba(197, 185, 229, 0.2);  /* Subtle glow */
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS 🍞 - SOLID BACKGROUNDS
+   ═══════════════════════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--cloud-white);  /* SOLID white */
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-xl);
+  animation: slideInRight var(--transition-base);
+  z-index: 9999;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(400px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-success {
+  border-left: 4px solid var(--success-green);  /* SOLID green */
+  background: var(--mint-solid);  /* SOLID mint background */
+}
+
+.toast-error {
+  border-left: 4px solid var(--urgent-red);  /* SOLID red */
+  background: var(--pink-solid);  /* SOLID pink background */
+}
+
+.toast-warning {
+  border-left: 4px solid var(--warning-yellow);  /* SOLID yellow */
+  background: var(--block-butter);  /* SOLID butter background */
+}
+
+.toast-info {
+  border-left: 4px solid var(--info-blue);  /* SOLID blue */
+  background: var(--sky-solid);  /* SOLID sky background */
+}
+
+.toast-info {
+  border-left: 4px solid var(--sky-blue);
 }
