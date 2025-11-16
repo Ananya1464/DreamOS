@@ -7,6 +7,19 @@ A revolutionary personal learning management system that uses **AI**, **YouTube 
 [![Made with React](https://img.shields.io/badge/Made%20with-React-61DAFB?logo=react)](https://reactjs.org/)
 [![Powered by Gemini](https://img.shields.io/badge/Powered%20by-Gemini%20AI-4285F4?logo=google)](https://ai.google.dev/)
 [![Wolfram Alpha](https://img.shields.io/badge/Enhanced%20by-Wolfram%20Alpha-DD1100?logo=wolframalpha)](https://www.wolframalpha.com/)
+[![Live Demo](https://img.shields.io/badge/🎬-Demo%20Video-red)](https://github.com/Ananya1464/DreamOS)
+
+---
+
+## 📺 Demo Video
+
+**[▶️ Watch 3-Minute Demo](https://youtube.com/your-video-link)** _(Add your video link here!)_
+
+**Quick Preview:**
+- 🎬 YouTube integration in action
+- 🧠 Visual knowledge graph with filtering
+- ✨ Luna AI conversational assistant
+- 📊 Real-time progress tracking
 
 ---
 
@@ -256,19 +269,33 @@ Collapsible sidebar in Birdseye gives you full-screen graph visualization when y
 
 ---
 
-## 📝 License
+## 📧 Contact & Submission Info
 
-MIT License - see LICENSE file for details.
+**Developer:** Ananya Dubey  
+**GitHub:** [@Ananya1464](https://github.com/Ananya1464)  
+**Email:** ananyadubey1464@gmail.com  
+**Repository:** [github.com/Ananya1464/DreamOS](https://github.com/Ananya1464/DreamOS)  
+**Hackathon:** [Add Your Hackathon Name]  
+**Submission Date:** November 2025
 
 ---
 
-## 🙏 Acknowledgments
+## 🎬 Screenshots
 
-- **Google Gemini** for conversational AI
-- **Wolfram Alpha** for computational intelligence
-- **YouTube Data API** for video metadata
-- **Framer Motion** for beautiful animations
-- **Tailwind CSS** for rapid UI development
+### Birdseye View - Interactive Knowledge Graph
+![Birdseye View](https://via.placeholder.com/800x400?text=Add+Screenshot+Here)
+
+### Luna AI - Conversational Assistant
+![Luna AI](https://via.placeholder.com/800x400?text=Add+Screenshot+Here)
+
+### SavedContent - YouTube Integration
+![SavedContent](https://via.placeholder.com/800x400?text=Add+Screenshot+Here)
+
+---
+
+## ⭐ Show Your Support
+
+If this project helped you, please give it a ⭐️!
 
 ---
 
