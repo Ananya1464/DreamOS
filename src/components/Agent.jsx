@@ -518,154 +518,63 @@ export default function Agent() {
           )}
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* ═══════════════════════════════════════════════════════════════
-              LEFT SIDE - AGENT INFO PANEL (30%)
-              ═══════════════════════════════════════════════════════════════ */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-1 space-y-6"
-          >
-            {/* Agent Profile */}
-            <Card>
-              <div className="text-center">
-                <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-[#C5B9E5] border-2 border-[#B5A8D5] flex items-center justify-center text-5xl">
-                  {agent.avatar}
-                </div>
-                <h2 className="text-2xl font-bold text-[#2D3436] mb-1">{agent.name}</h2>
-                <p className="text-sm text-[#7A8A7D] mb-4">Your AI Study Companion</p>
-                
-                {/* Current Mode */}
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E9ECEF] border-2 border-[#D9E4E0]">
-                  <Sparkles className="w-4 h-4 text-[#8B7AA3]" />
-                  <span className="text-sm font-semibold text-[#8B7AA3]">{agent.mode}</span>
-                </div>
-              </div>
-            </Card>
-
-            {/* Quick Stats */}
-            <Card>
-              <h3 className="text-lg font-bold text-[#2D3436] mb-4">Quick Stats</h3>
-              <div className="space-y-4">
-                {nearestExam ? (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#FFE5E8] flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-5 h-5 text-[#FF9B9B]" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-[#7A8A7D]">Days until first exam</p>
-                      <p className="text-xl font-bold text-[#FF9B9B]">{nearestExam.daysLeft} days</p>
-                      <p className="text-xs text-[#9B8AA3] mt-1">{nearestExam.name}</p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#E5E5E5] flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-5 h-5 text-[#7A8A7D]" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-[#7A8A7D]">No exams scheduled</p>
-                      <p className="text-xs text-[#9B8AA3] mt-1">Add subjects to get started!</p>
-                    </div>
-                  </div>
+        {/* Mode Selector - Horizontal like ChatGPT */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300">
+            {[
+              { icon: '🌅', name: 'Morning Planner' },
+              { icon: '📊', name: 'Progress Tracker' },
+              { icon: '🤔', name: 'Study Buddy' },
+              { icon: '🧮', name: 'Problem Solver', badge: 'NEW' },
+              { icon: '🌙', name: 'Evening Reflection' },
+            ].map((mode) => (
+              <motion.button
+                key={mode.name}
+                onClick={() => {
+                  setActiveMode(mode.name);
+                  const welcomeMessages = {
+                    'Morning Planner': '🌅 Good morning! Let\'s plan your day together. What subjects do you want to focus on today?',
+                    'Progress Tracker': '📊 Let\'s review your progress! Ask me about any subject or check your overall performance.',
+                    'Study Buddy': '🤔 I\'m here to help with your homework! Share what you\'re working on, and I\'ll assist you.',
+                    'Problem Solver': '🧮 I can solve math and science problems! Try asking me to solve equations, integrate functions, or explain concepts.',
+                    'Evening Reflection': '🌙 How was your day? Let\'s reflect on what you accomplished and plan for tomorrow.'
+                  };
+                  
+                  if (messages.length === 0 || messages[messages.length - 1].sender === 'user') {
+                    setMessages(prev => [...prev, {
+                      id: prev.length + 1,
+                      timestamp: new Date().toISOString(),
+                      sender: 'agent',
+                      message: welcomeMessages[mode.name]
+                    }]);
+                  }
+                }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap transition-all ${
+                  activeMode === mode.name
+                    ? 'bg-gradient-to-r from-[#B5A3E5] to-[#C5B9E5] text-white shadow-lg'
+                    : 'bg-white text-[#7A8A7D] hover:bg-gray-50 border-2 border-gray-200'
+                }`}
+              >
+                <span className="text-xl">{mode.icon}</span>
+                <span className="font-semibold text-sm">{mode.name}</span>
+                {mode.badge && (
+                  <Badge className="bg-orange-500 text-white text-xs px-2 py-0.5 ml-1">
+                    {mode.badge}
+                  </Badge>
                 )}
+              </motion.button>
+            ))}
+          </div>
+        </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FFE5D9] flex items-center justify-center flex-shrink-0">
-                    <BookOpen className="w-5 h-5 text-[#FFB5C0]" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-[#7A8A7D]">Topics due for revision</p>
-                    <p className="text-xl font-bold text-[#FFB5C0]">{topicsDueForRevision} topics</p>
-                    <p className="text-xs text-[#9B8AA3] mt-1">Review today!</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#E6E3F5] flex items-center justify-center flex-shrink-0">
-                    <AlertCircle className="w-5 h-5 text-[#C5A3FF]" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-[#7A8A7D]">Saved content unwatched</p>
-                    <p className="text-xl font-bold text-[#C5A3FF]">{unwatchedContent} items</p>
-                    <p className="text-xs text-[#9B8AA3] mt-1">Time to watch!</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Modes */}
-            <Card>
-              <h3 className="text-lg font-bold text-[#2D3436] mb-3">Luna's Modes</h3>
-              <div className="space-y-2">
-                {[
-                  { icon: '🌅', name: 'Morning Planner', description: 'Plan your day' },
-                  { icon: '📊', name: 'Progress Tracker', description: 'Track your progress' },
-                  { icon: '🤔', name: 'Study Buddy', description: 'Get homework help' },
-                  { icon: '🧮', name: 'Problem Solver', description: 'Solve math & science', badge: 'NEW' },
-                  { icon: '🌙', name: 'Evening Reflection', description: 'Reflect on your day' },
-                ].map((mode) => (
-                  <motion.div
-                    key={mode.name}
-                    onClick={() => {
-                      setActiveMode(mode.name);
-                      // Add welcome message for each mode
-                      const welcomeMessages = {
-                        'Morning Planner': '🌅 Good morning! Let\'s plan your day together. What subjects do you want to focus on today?',
-                        'Progress Tracker': '📊 Let\'s review your progress! Ask me about any subject or check your overall performance.',
-                        'Study Buddy': '🤔 I\'m here to help with your homework! Share what you\'re working on, and I\'ll assist you.',
-                        'Problem Solver': '🧮 I can solve math and science problems! Try asking me to solve equations, integrate functions, or explain concepts.',
-                        'Evening Reflection': '🌙 How was your day? Let\'s reflect on what you accomplished and plan for tomorrow.'
-                      };
-                      
-                      if (messages.length === 0 || messages[messages.length - 1].sender === 'user') {
-                        setMessages(prev => [...prev, {
-                          id: prev.length + 1,
-                          timestamp: new Date().toISOString(),
-                          sender: 'agent',
-                          message: welcomeMessages[mode.name]
-                        }]);
-                      }
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`p-3 rounded-xl flex items-center gap-3 transition-all cursor-pointer ${
-                      activeMode === mode.name
-                        ? 'bg-gradient-to-r from-[#B5A3E5] to-[#C5B9E5] border-2 border-[#9B89D5] shadow-lg'
-                        : 'bg-[#FEFEFE] border-2 border-[#E5E5E5] hover:bg-[#F8F6ED] hover:border-[#C5B9E5]'
-                    }`}
-                  >
-                    <span className="text-2xl">{mode.icon}</span>
-                    <div className="flex-1">
-                      <div className={`font-semibold ${activeMode === mode.name ? 'text-white' : 'text-[#7A8A7D]'}`}>
-                        {mode.name}
-                      </div>
-                      <div className={`text-xs ${activeMode === mode.name ? 'text-white/80' : 'text-gray-500'}`}>
-                        {mode.description}
-                      </div>
-                    </div>
-                    {mode.badge && (
-                      <Badge className="bg-orange-500 text-white text-xs px-2 py-1">
-                        {mode.badge}
-                      </Badge>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* ═══════════════════════════════════════════════════════════════
-              RIGHT SIDE - CHAT INTERFACE (70%)
-              ═══════════════════════════════════════════════════════════════ */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-2"
-          >
-            <Card className="flex flex-col" style={{ height: 'calc(100vh - 200px)' }}>
+        {/* Chat Interface - Full Width */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Card className="flex flex-col" style={{ height: 'calc(100vh - 280px)' }}>
               {/* Chat Messages */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 <AnimatePresence>
@@ -788,26 +697,9 @@ export default function Agent() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Quick Actions */}
-              <div className="px-6 py-3 border-t border-[#F8F6ED]">
-                <div className="flex gap-2 flex-wrap">
-                  {quickActions.map((action) => (
-                    <button
-                      key={action.text}
-                      onClick={() => handleQuickAction(action.action, action.text)}
-                      disabled={loading}
-                      className="px-4 py-2 rounded-full bg-white border-2 border-[#F8F6ED] hover:border-[#C5A3FF] hover:bg-[#C5A3FF]/5 transition-all text-sm font-semibold text-[#7A8A7D] hover:text-[#C5A3FF] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span>{action.icon}</span>
-                      <span>{action.text}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Input Box */}
               <div className="p-6 border-t border-[#F8F6ED]">
-                <div className="flex gap-3">
+                <div className="flex gap-3 mb-3">
                   <input
                     type="text"
                     value={input}
@@ -835,10 +727,24 @@ export default function Agent() {
                     )}
                   </button>
                 </div>
+
+                {/* Quick Actions - Below input */}
+                <div className="flex gap-2 flex-wrap">
+                  {quickActions.map((action) => (
+                    <button
+                      key={action.text}
+                      onClick={() => handleQuickAction(action.action, action.text)}
+                      disabled={loading}
+                      className="px-3 py-1.5 rounded-full bg-white border-2 border-[#F8F6ED] hover:border-[#C5A3FF] hover:bg-[#C5A3FF]/5 transition-all text-xs font-semibold text-[#7A8A7D] hover:text-[#C5A3FF] flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span>{action.icon}</span>
+                      <span>{action.text}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </Card>
           </motion.div>
-        </div>
         
         {/* API Key Modal */}
         <AnimatePresence>

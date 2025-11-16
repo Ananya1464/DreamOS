@@ -60,6 +60,7 @@ function AppContent() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [showWelcome, setShowWelcome] = useState(needsInitialization());
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const { user, logout } = useAuth();
 
   // ⚠️ HOOKS MUST BE AT TOP - BEFORE ANY CONDITIONAL RETURNS!
@@ -98,7 +99,7 @@ function AppContent() {
       case 'agent':
         return <Agent />;
       case 'birdseye':
-        return <BirdseyeView />;
+        return <BirdseyeView sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />;
       case 'progress':
         return <ProgressHub />;
       case 'reflections':
@@ -119,7 +120,11 @@ function AppContent() {
           ═══════════════════════════════════════════════════════════════ */}
       <motion.nav
         initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
+        animate={{ 
+          x: sidebarOpen ? 0 : -288,
+          opacity: sidebarOpen ? 1 : 0 
+        }}
+        transition={{ type: "spring", damping: 20, stiffness: 100 }}
         className="fixed left-0 top-0 h-screen w-72 bg-gradient-to-b from-white to-[#FFF5F5] shadow-xl z-50 border-r-2 border-[#FFE5E8] flex flex-col overflow-hidden"
       >
         {/* Scrollable Content Container */}
@@ -227,7 +232,13 @@ function AppContent() {
       {/* ═══════════════════════════════════════════════════════════════
           MAIN CONTENT AREA
           ═══════════════════════════════════════════════════════════════ */}
-      <main className="ml-72">
+      <motion.main 
+        animate={{ 
+          marginLeft: sidebarOpen ? '18rem' : '0rem'
+        }}
+        transition={{ type: "spring", damping: 20, stiffness: 100 }}
+        className="transition-all"
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPage}
@@ -239,7 +250,7 @@ function AppContent() {
             {renderPage()}
           </motion.div>
         </AnimatePresence>
-      </main>
+      </motion.main>
       
       {/* PWA Install Prompt */}
       <InstallPrompt />

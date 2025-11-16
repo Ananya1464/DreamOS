@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, GitBranch, Sparkles, X, Plus, Minus, Compass, TrendingUp, Youtube, BookOpen, Zap } from 'lucide-react';
+import { Brain, GitBranch, Sparkles, X, Plus, Minus, Compass, TrendingUp, Youtube, BookOpen, Zap, Menu } from 'lucide-react';
 import { Card, Badge } from './UI';
 import { useSubjects } from '../hooks/useBackend';
 import { queryWolfram } from '../utils/wolframService';
@@ -9,12 +9,14 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { fetchLikedVideos, extractTopicsFromVideos, buildBirdseyeFromYouTube } from '../services/youtubeService';
 import { getGeminiModel } from '../utils/ai';
 import { loadSubjects, saveSubjects } from '../utils/storage';
+import { importFromYouTube } from '../services/savedContentService';
+import AddSubjectModal from './AddSubjectModal';
 
 /**
  * Birdseye Knowledge Graph - Visual Brain Map
  * Interactive network showing how your learning topics connect
  */
-export default function BirdseyeView() {
+export default function BirdseyeView({ sidebarOpen, setSidebarOpen }) {
   const { subjects, loading } = useSubjects(5000);
   const canvasRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -29,6 +31,44 @@ export default function BirdseyeView() {
   const [loadingInsights, setLoadingInsights] = useState(false);
   const [enhancedConnections, setEnhancedConnections] = useState({});
   const [isLoadingYouTube, setIsLoadingYouTube] = useState(false);
+  const [showAddTopicModal, setShowAddTopicModal] = useState(false);
+  const [filteredSubjects, setFilteredSubjects] = useState([]); // Filter to show only selected subjects
+
+  // Handle manually adding a topic/subject with Wolfram enhancement
+  const handleAddSubject = async (newSubject) => {
+    try {
+      console.log('🔍 Enhancing subject with Wolfram AI:', newSubject.name);
+      
+      // Get Wolfram insights for the subject
+      const wolframData = await queryWolfram(newSubject.name, 'knowledge');
+      
+      if (wolframData) {
+        console.log('✨ Wolfram enhanced the subject!');
+        newSubject.wolframEnhanced = true;
+      }
+      
+      const currentSubjects = loadSubjects();
+      const updatedSubjects = {
+        ...currentSubjects,
+        [newSubject.id]: newSubject
+      };
+      saveSubjects(updatedSubjects);
+      setShowAddTopicModal(false);
+      console.log('✅ Subject added to Birdseye:', newSubject.name);
+      setTimeout(() => window.location.reload(), 500);
+    } catch (error) {
+      console.error('⚠️ Wolfram enhancement failed, adding anyway:', error);
+      // Still add the subject even if Wolfram fails
+      const currentSubjects = loadSubjects();
+      const updatedSubjects = {
+        ...currentSubjects,
+        [newSubject.id]: newSubject
+      };
+      saveSubjects(updatedSubjects);
+      setShowAddTopicModal(false);
+      setTimeout(() => window.location.reload(), 500);
+    }
+  };
 
   // YouTube OAuth integration
   const handleYouTubeConnect = useGoogleLogin({
@@ -62,14 +102,18 @@ export default function BirdseyeView() {
         const youtubeSubjects = buildBirdseyeFromYouTube(topics);
         console.log(`✅ Built ${Object.keys(youtubeSubjects).length} subjects for Birdseye`);
 
-        // 4. Merge with existing subjects
+        // 4. Import videos to SavedContent page (NEW!)
+        importFromYouTube(videos);
+        console.log(`✅ Imported ${videos.length} videos to SavedContent`);
+
+        // 5. Merge with existing subjects
         const existingSubjects = loadSubjects();
         const mergedSubjects = { ...existingSubjects, ...youtubeSubjects };
         saveSubjects(mergedSubjects);
 
         console.log('✅ YouTube data integrated! Reloading...');
         
-        // 5. Reload page to show new data
+        // 6. Reload page to show new data
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -254,6 +298,19 @@ export default function BirdseyeView() {
     return suggestions.filter(s => !currentTopics.includes(s.name));
   };
 
+  // Auto-initialize test data if no subjects exist
+  useEffect(() => {
+    const currentSubjects = loadSubjects();
+    if (!currentSubjects || Object.keys(currentSubjects).length === 0) {
+      console.log('🎯 Auto-initializing test data for Birdseye...');
+      initializeTestData();
+      // Force a re-render by reloading subjects
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
+  }, []);
+
   // Get all topics from subjects and create dynamic node structure
   useEffect(() => {
     if (!subjects || Object.keys(subjects).length === 0) return;
@@ -375,11 +432,22 @@ export default function BirdseyeView() {
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
 
+    // Filter nodes based on selected subjects
+    let visibleNodes = nodes;
+    if (filteredSubjects.length > 0) {
+      visibleNodes = nodes.filter(node => {
+        if (node.type === 'center') return true; // Always show center
+        if (node.type === 'subject') return filteredSubjects.includes(node.id);
+        if (node.type === 'topic') return filteredSubjects.includes(node.parentId);
+        return false;
+      });
+    }
+
     // Draw connections
-    nodes.forEach(node => {
+    visibleNodes.forEach(node => {
       // Draw topic-to-parent connections
       if (node.parentId) {
-        const parent = nodes.find(n => n.id === node.parentId);
+        const parent = visibleNodes.find(n => n.id === node.parentId);
         if (parent) {
           ctx.beginPath();
           ctx.moveTo(parent.x, parent.y);
@@ -409,7 +477,7 @@ export default function BirdseyeView() {
       // Draw cross-connections between related topics (knowledge links!)
       if (node.type === 'topic' && node.connections && node.connections.length > 0) {
         node.connections.forEach(connectedName => {
-          const connectedNode = nodes.find(n => 
+          const connectedNode = visibleNodes.find(n => 
             n.type === 'topic' && n.label === connectedName
           );
           
@@ -428,7 +496,7 @@ export default function BirdseyeView() {
     });
 
     // Draw nodes
-    nodes.forEach(node => {
+    visibleNodes.forEach(node => {
       // Pulse animation for recently studied topics
       const isPulse = node.lastStudied && 
         (new Date() - new Date(node.lastStudied)) < 3600000; // Within 1 hour
@@ -498,7 +566,7 @@ export default function BirdseyeView() {
     });
 
     ctx.restore();
-  }, [nodes, zoom, pan, selectedNode]);
+  }, [nodes, zoom, pan, selectedNode, filteredSubjects]);
 
   // Handle canvas click
   const handleCanvasClick = (e) => {
@@ -559,69 +627,138 @@ export default function BirdseyeView() {
               </div>
             </div>
 
-            {/* Zoom controls */}
-            <div className="flex items-center gap-2">
-              {/* YouTube Connect Button - Always visible */}
+            {/* Control buttons - Better organized */}
+            <div className="flex items-center gap-3">
+              {/* Sidebar Toggle */}
               <button
-                onClick={handleYouTubeConnect}
-                disabled={isLoadingYouTube}
-                className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 transition font-semibold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Connect your YouTube account to import your interests"
+                onClick={() => setSidebarOpen?.(!sidebarOpen)}
+                className="p-2 bg-white rounded-lg hover:bg-gray-100 transition border border-gray-200"
+                title={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
               >
-                {isLoadingYouTube ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <Youtube className="w-4 h-4" />
-                    Connect YouTube
-                  </>
-                )}
+                <Menu className="w-5 h-5 text-gray-700" />
               </button>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-gray-300"></div>
+
+              {/* Primary Actions */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleYouTubeConnect}
+                  disabled={isLoadingYouTube}
+                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 transition font-semibold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Import from Watch Later & Custom Playlists"
+                >
+                  {isLoadingYouTube ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Importing playlists...
+                    </>
+                  ) : (
+                    <>
+                      <Youtube className="w-4 h-4" />
+                      Import from YouTube
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowDiscovery(!showDiscovery)}
+                  className={`px-4 py-2 rounded-lg transition font-semibold text-sm flex items-center gap-2 ${
+                    showDiscovery 
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
+                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Compass className="w-4 h-4" />
+                  Discover New
+                </button>
+                <button
+                  onClick={() => getWolframInsights()}
+                  disabled={loadingInsights}
+                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition font-semibold text-sm flex items-center gap-2 disabled:opacity-50"
+                >
+                  <Zap className="w-4 h-4" />
+                  {loadingInsights ? 'Analyzing...' : 'Wolfram Insights'}
+                </button>
+              </div>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-gray-300"></div>
+
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+                  className="p-2 bg-white rounded-lg hover:bg-gray-100 transition"
+                  title="Zoom out"
+                >
+                  <Minus className="w-5 h-5" />
+                </button>
+                <span className="text-sm font-semibold text-gray-700 min-w-[60px] text-center">
+                  {Math.round(zoom * 100)}%
+                </span>
+                <button
+                  onClick={() => setZoom(Math.min(2, zoom + 0.1))}
+                  className="p-2 bg-white rounded-lg hover:bg-gray-100 transition"
+                  title="Zoom in"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
+                  className="px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition text-sm font-semibold"
+                  title="Reset view"
+                >
+                  Reset View
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Subject Filter Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <Card className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-sm font-semibold text-gray-700">View:</span>
               <button
-                onClick={() => setShowDiscovery(!showDiscovery)}
-                className={`px-4 py-2 rounded-lg transition font-semibold text-sm flex items-center gap-2 ${
-                  showDiscovery 
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
+                onClick={() => setFilteredSubjects([])}
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition ${
+                  filteredSubjects.length === 0
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                <Compass className="w-4 h-4" />
-                Discover New
+                All Subjects
               </button>
-              <button
-                onClick={() => getWolframInsights()}
-                disabled={loadingInsights}
-                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition font-semibold text-sm flex items-center gap-2 disabled:opacity-50"
-              >
-                <Zap className="w-4 h-4" />
-                {loadingInsights ? 'Analyzing...' : 'Wolfram Insights'}
-              </button>
-              <button
-                onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
-                className="p-2 bg-white rounded-lg hover:bg-gray-100 transition"
-              >
-                <Minus className="w-5 h-5" />
-              </button>
-              <span className="text-sm font-semibold text-gray-700 min-w-[60px] text-center">
-                {Math.round(zoom * 100)}%
-              </span>
-              <button
-                onClick={() => setZoom(Math.min(2, zoom + 0.1))}
-                className="p-2 bg-white rounded-lg hover:bg-gray-100 transition"
-              >
-                <Plus className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
-                className="ml-2 px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition text-sm font-semibold"
-              >
-                Reset View
-              </button>
+              {nodes.filter(n => n.type === 'subject').map(subject => (
+                <button
+                  key={subject.id}
+                  onClick={() => {
+                    if (filteredSubjects.includes(subject.id)) {
+                      setFilteredSubjects(filteredSubjects.filter(id => id !== subject.id));
+                    } else {
+                      setFilteredSubjects([...filteredSubjects, subject.id]);
+                    }
+                  }}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition ${
+                    filteredSubjects.includes(subject.id)
+                      ? 'text-white shadow-md'
+                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                  }`}
+                  style={{
+                    background: filteredSubjects.includes(subject.id) ? subject.color : undefined
+                  }}
+                >
+                  {subject.label}
+                </button>
+              ))}
             </div>
-          </div>
+          </Card>
         </motion.div>
 
         {/* Discovery Panel */}
@@ -827,22 +964,24 @@ export default function BirdseyeView() {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="relative">
           
-          {/* Main Graph Canvas */}
-          <div className="lg:col-span-2">
-            <Card className="bg-white p-0 overflow-hidden">
-              <canvas
-                ref={canvasRef}
-                onClick={handleCanvasClick}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                className="w-full cursor-move"
-                style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-              />
-              <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-t-2 border-purple-100">
+          {/* Main Graph Canvas - Full Width */}
+          <Card className="bg-white p-0 overflow-hidden">
+            <canvas
+              ref={canvasRef}
+              onClick={handleCanvasClick}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              className="w-full cursor-move"
+              style={{ 
+                cursor: isDragging ? 'grabbing' : 'grab',
+                height: '600px'
+              }}
+            />
+            <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-t-2 border-purple-100">
                 <div className="flex items-center justify-between text-sm flex-wrap gap-4">
                   <div className="flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-2">
@@ -905,17 +1044,17 @@ export default function BirdseyeView() {
                       {isLoadingYouTube ? (
                         <>
                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                          Analyzing your YouTube history...
+                          Importing your playlists & videos...
                         </>
                       ) : (
                         <>
                           <Youtube className="w-5 h-5" />
-                          🎬 Connect YouTube (Build from REAL Data!)
+                          🎬 Import from YouTube (Watch Later + Playlists!)
                         </>
                       )}
                     </button>
                     <p className="text-xs text-gray-500 text-center">
-                      Import your liked videos & watch history to build your actual knowledge graph
+                      Imports from Watch Later and your custom playlists only
                     </p>
 
                     {/* Test Data - Secondary Option */}
@@ -944,84 +1083,52 @@ export default function BirdseyeView() {
                 )}
               </div>
             </Card>
-          </div>
 
-          {/* Details Panel */}
-          <div className="lg:col-span-1">
-            <AnimatePresence mode="wait">
-              {!selectedNode ? (
-                <motion.div
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Card className="bg-gradient-to-br from-purple-50 to-pink-50">
-                    <div className="text-center py-8">
-                      <motion.div
-                        animate={{ 
-                          scale: [1, 1.1, 1],
-                          rotate: [0, 5, -5, 0]
-                        }}
-                        transition={{ 
-                          repeat: Infinity, 
-                          duration: 3
-                        }}
-                        className="w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center mx-auto mb-4"
-                      >
-                        <Brain className="w-10 h-10 text-white" />
-                      </motion.div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        Your Knowledge Network
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Click any node to see details about that topic, subject, or connection.
+          {/* Floating Details Panel - Only when node selected */}
+          <AnimatePresence mode="wait">
+            {selectedNode && (
+              <motion.div
+                key="selected"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="absolute top-4 right-4 w-96 max-h-[calc(100vh-200px)] overflow-y-auto z-10"
+              >
+                <Card className="bg-white shadow-2xl">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <Badge className="mb-2" style={{ backgroundColor: selectedNode.color, color: 'white' }}>
+                        {selectedNode.type.toUpperCase()}
+                      </Badge>
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        {selectedNode.label}
+                      </h2>
+                    </div>
+                    <button
+                      onClick={() => setSelectedNode(null)}
+                      className="p-2 hover:bg-gray-100 rounded-full transition"
+                    >
+                      <X className="w-5 h-5 text-gray-400" />
+                    </button>
+                  </div>
+
+                  {selectedNode.type === 'center' && (
+                    <div className="space-y-4">
+                      <p className="text-gray-700">
+                        This is you! The center of your learning journey.
                       </p>
-                    </div>
-                  </Card>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="selected"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                >
-                  <Card className="bg-white">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <Badge className="mb-2" style={{ backgroundColor: selectedNode.color, color: 'white' }}>
-                          {selectedNode.type.toUpperCase()}
-                        </Badge>
-                        <h2 className="text-2xl font-bold text-gray-900">
-                          {selectedNode.label}
-                        </h2>
-                      </div>
-                      <button
-                        onClick={() => setSelectedNode(null)}
-                        className="p-2 hover:bg-gray-100 rounded-full transition"
-                      >
-                        <X className="w-5 h-5 text-gray-400" />
-                      </button>
-                    </div>
-
-                    {selectedNode.type === 'center' && (
-                      <div className="space-y-4">
-                        <p className="text-gray-700">
-                          This is you! The center of your learning journey.
-                        </p>
-                        <div className="bg-purple-50 rounded-lg p-4">
-                          <h4 className="font-bold text-gray-900 mb-2">Connected Subjects:</h4>
-                          <div className="space-y-2">
-                            {nodes.filter(n => n.type === 'subject').map(subject => (
-                              <div key={subject.id} className="flex items-center justify-between text-sm">
-                                <span>{subject.label}</span>
-                                <span className="font-semibold" style={{ color: subject.color }}>
-                                  {Math.round(subject.mastery)}% mastery
-                                </span>
-                              </div>
-                            ))}
-                          </div>
+                      <div className="bg-purple-50 rounded-lg p-4">
+                        <h4 className="font-bold text-gray-900 mb-2">Connected Subjects:</h4>
+                        <div className="space-y-2">
+                          {nodes.filter(n => n.type === 'subject').map(subject => (
+                            <div key={subject.id} className="flex items-center justify-between text-sm">
+                              <span>{subject.label}</span>
+                              <span className="font-semibold" style={{ color: subject.color }}>
+                                {Math.round(subject.mastery)}% mastery
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                         </div>
                       </div>
                     )}
@@ -1202,9 +1309,31 @@ export default function BirdseyeView() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
         </div>
+
+        {/* Add Topic Button - Below the graph */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6 flex justify-center"
+        >
+          <button
+            onClick={() => setShowAddTopicModal(true)}
+            className="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl hover:from-green-600 hover:to-teal-600 transition-all shadow-lg hover:shadow-xl font-bold flex items-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Add Topic Manually
+          </button>
+        </motion.div>
       </div>
+
+      {/* Add Subject Modal */}
+      {showAddTopicModal && (
+        <AddSubjectModal
+          onClose={() => setShowAddTopicModal(false)}
+          onAdd={handleAddSubject}
+        />
+      )}
     </div>
   );
 }

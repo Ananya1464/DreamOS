@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Instagram, Youtube, Clock, Calendar, TrendingDown, Eye, EyeOff, Trash2, CheckCircle2, Filter } from 'lucide-react';
+import { Instagram, Youtube, Clock, Calendar, TrendingDown, Eye, EyeOff, Trash2, CheckCircle2, Filter, RefreshCw } from 'lucide-react';
 import { Card, Button, Badge, ProgressBar } from './UI';
 import { getSavedContent, markAsWatched, deleteSavedItem } from '../services/savedContentService';
 import INITIAL_DATA from '../data/initialData';
@@ -13,6 +13,7 @@ export default function SavedContent() {
   const [activeTab, setActiveTab] = useState('youtube'); // Start with youtube since we have YouTube integration
   const [filter, setFilter] = useState('all'); // 'all', 'watched', 'unwatched'
   const [sortBy, setSortBy] = useState('date'); // 'date', 'age', 'duration'
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Load saved content from localStorage
   useEffect(() => {
@@ -27,6 +28,14 @@ export default function SavedContent() {
     };
     loadContent();
   }, []);
+
+  // Refresh content (useful after YouTube import)
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    const content = getSavedContent();
+    setSavedContent(content);
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   // Handle marking content as watched
   const handleMarkWatched = (itemId) => {
@@ -115,6 +124,26 @@ export default function SavedContent() {
         >
           <h1 className="text-4xl font-bold text-[#2D3436] mb-2" style={{fontFamily: 'Playfair Display, serif'}}>Content Graveyard 💀</h1>
           <p className="text-[#7A8A7D]" style={{fontFamily: 'Caveat, cursive', fontSize: '18px'}}>Time to face the saved content you'll probably never watch...</p>
+          
+          {/* Real-time YouTube connection indicator */}
+          {savedContent.youtube.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 p-3 bg-gradient-to-r from-red-50 to-pink-50 rounded-xl border-2 border-red-200 flex items-center gap-3"
+            >
+              <Youtube className="w-5 h-5 text-red-500" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-800">
+                  🎬 Connected to YouTube
+                </p>
+                <p className="text-xs text-gray-600">
+                  {savedContent.youtube.length} videos imported from your liked videos • Real-time sync enabled
+                </p>
+              </div>
+              <Badge className="bg-green-500 text-white">Live</Badge>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* ═══════════════════════════════════════════════════════════════
@@ -241,6 +270,16 @@ export default function SavedContent() {
                   <Youtube className="w-5 h-5" />
                   YouTube ({savedContent.youtube.length})
                 </button>
+                {/* Refresh Button */}
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl font-semibold transition-all bg-gradient-to-r from-[#B5A3E5] to-[#D4C5F9] text-white hover:shadow-lg disabled:opacity-50"
+                  title="Refresh saved content"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  {isRefreshing ? 'Syncing...' : 'Refresh'}
+                </button>
               </div>
 
               {/* Filters */}
@@ -296,16 +335,40 @@ export default function SavedContent() {
                   transition={{ delay: index * 0.05 }}
                 >
                   <Card className={`h-full ${item.watched ? 'opacity-75' : ''} hover:shadow-lg transition-all`}>
+                    {/* Thumbnail for YouTube videos */}
+                    {item.thumbnail && activeTab === 'youtube' && (
+                      <div className="mb-3 -mx-6 -mt-6 relative overflow-hidden rounded-t-2xl">
+                        <img 
+                          src={item.thumbnail} 
+                          alt={item.title}
+                          className="w-full h-40 object-cover"
+                        />
+                        {item.watched && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <CheckCircle2 className="w-12 h-12 text-white" />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {/* Platform Badge */}
                     <div className="flex items-center justify-between mb-3">
-                      <Badge variant={activeTab === 'instagram' ? 'info' : 'danger'}>
-                        {activeTab === 'instagram' ? (
-                          <Instagram className="w-3 h-3 mr-1" />
-                        ) : (
-                          <Youtube className="w-3 h-3 mr-1" />
+                      <div className="flex flex-col gap-1">
+                        <Badge variant={activeTab === 'instagram' ? 'info' : 'danger'}>
+                          {activeTab === 'instagram' ? (
+                            <Instagram className="w-3 h-3 mr-1" />
+                          ) : (
+                            <Youtube className="w-3 h-3 mr-1" />
+                          )}
+                          {item.category}
+                        </Badge>
+                        {/* Show playlist name if available */}
+                        {item.playlistName && (
+                          <span className="text-xs text-gray-500 flex items-center gap-1">
+                            📋 {item.playlistName}
+                          </span>
                         )}
-                        {item.category}
-                      </Badge>
+                      </div>
                       {item.watched ? (
                         <Eye className="w-5 h-5 text-[#80D6D6]" />
                       ) : (
@@ -313,10 +376,23 @@ export default function SavedContent() {
                       )}
                     </div>
 
-                    {/* Title */}
-                    <h3 className="text-lg font-bold text-[#2D3436] mb-2 line-clamp-2">
-                      {item.title}
-                    </h3>
+                    {/* Title - Clickable for YouTube */}
+                    {item.url ? (
+                      <a 
+                        href={item.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="block mb-2 hover:text-red-500 transition-colors"
+                      >
+                        <h3 className="text-lg font-bold text-[#2D3436] line-clamp-2 hover:underline">
+                          {item.title}
+                        </h3>
+                      </a>
+                    ) : (
+                      <h3 className="text-lg font-bold text-[#2D3436] mb-2 line-clamp-2">
+                        {item.title}
+                      </h3>
+                    )}
 
                     {/* Creator */}
                     <p className="text-sm text-[#7A8A7D] mb-3">
@@ -376,6 +452,7 @@ export default function SavedContent() {
                     {/* Actions */}
                     <div className="flex gap-2">
                       <Button
+                        onClick={() => handleMarkWatched(item.id)}
                         variant={item.watched ? 'ghost' : 'primary'}
                         size="sm"
                         icon={item.watched ? <CheckCircle2 className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -384,10 +461,12 @@ export default function SavedContent() {
                         {item.watched ? 'Watched' : 'Mark Watched'}
                       </Button>
                       <Button
+                        onClick={() => handleDelete(item.id)}
                         variant="ghost"
                         size="sm"
                         icon={<Trash2 className="w-4 h-4" />}
                         className="text-[#FF9B9B] hover:bg-[#FFE5E8]"
+                        title="Delete"
                       >
                       </Button>
                     </div>
